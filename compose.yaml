@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+
+  discord-bot:
+    container_name: naruto-discord-bot
+
+    build:
+      context: .
+      dockerfile: services/discord-bot/Dockerfile
+
+    restart: unless-stopped
+
+    env_file:
+      - ./services/discord-bot/.env
+
+    volumes:
+      - ./services/discord-bot:/app/services/discord-bot
+      - ./core:/app/core
