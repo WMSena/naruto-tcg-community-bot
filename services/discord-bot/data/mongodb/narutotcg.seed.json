@@ -1,0 +1,60 @@
+{
+  "database": "narutotcg",
+  "collections": {
+    "message_template": [
+      {
+        "slug": "rules",
+        "title": "📜 Peraturan Server - Aliansi Shinobi INAGAKURE",
+        "description": "Selamat datang di **Naruto TCG Community Indonesia!**\n\nDemi menjaga ekosistem komunitas yang sehat, adil, dan menyenangkan, setiap Shinobi diwajibkan membaca dan mematuhi peraturan di bawah ini.",
+        "color": 15965202,
+        "fields": [
+          {
+            "name": "1️⃣ Menghormati Sesama Shinobi (Sopan Santun)",
+            "value": "Saling menghargai sesama anggota. Dilarang keras melakukan harassment, ujaran kebencian (*hate speech*), provokasi, atau serangan pribadi.",
+            "inline": false
+          },
+          {
+            "name": "2️⃣ Transaksi & Trade Aman",
+            "value": "Gunakan channel pasar/jual-beli yang disediakan. Sangat disarankan menggunakan jasa Rekber (Rekening Bersama) terpercaya. Penipuan (*scamming*) akan berujung pada **permanent ban**.",
+            "inline": false
+          },
+          {
+            "name": "3️⃣ Kejujuran Kartu & Proxies",
+            "value": "Wajib memberikan deskripsi kondisi kartu secara jujur saat jual-beli/barter.\nPenggunaan kartu *Proxy* / cetakan sendiri wajib diinfokan secara transparan saat *casual match* dan dilarang pada turnamen resmi.",
+            "inline": false
+          },
+          {
+            "name": "4️⃣ Keamanan & Konten Bebas NSFW",
+            "value": "Dilarang membagikan konten NSFW, SARA, atau konten ilegal lainnya. Jaga agar server tetap aman dan nyaman untuk semua umur.",
+            "inline": false
+          },
+          {
+            "name": "5️⃣ Dilarang Spam & Promosi Tanpa Izin",
+            "value": "Hindari *spamming*, *mention* berlebihan, atau membagikan tautan promosi/server lain tanpa izin dari Moderator/Kage.",
+            "inline": false
+          },
+          {
+            "name": "6️⃣ Gunakan Channel Sesuai Diskusi",
+            "value": "Gunakan channel yang sesuai untuk topik tertentu seperti *deck building*, *rules clarification*, transaksi, atau obrolan santai.",
+            "inline": false
+          }
+        ],
+        "footer": {
+          "text": "Aliansi Shinobi INAGAKURE • Terakhir Diperbarui"
+        },
+        "created_at": "2026-07-23T12:06:27.513000+00:00",
+        "updated_at": "2026-07-23T12:06:27.513000+00:00"
+      }
+    ],
+    "message_store": [
+      {
+        "key": "rules",
+        "guild_id": "<DISCORD_GUILD_ID>",
+        "channel_id": "<RULES_MESSAGE_CHANNEL_ID>",
+        "message_id": "1529821999977857036",
+        "created_at": "2026-07-23T12:06:27.513000+00:00",
+        "updated_at": "2026-07-23T12:06:27.513000+00:00"
+      }
+    ]
+  }
+}

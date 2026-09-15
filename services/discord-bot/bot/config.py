@@ -23,3 +23,11 @@ MESSAGE_MANAGER_ROLE_IDS = [
     ).split(",")
     if role.strip()
 ]
+
+# Optional recovery of the live peraturan Discord message after DB loss.
+# Enable Developer Mode in Discord, right-click the rules channel → Copy Channel ID.
+RULES_MESSAGE_CHANNEL_ID = os.getenv("RULES_MESSAGE_CHANNEL_ID", "").strip()
+RULES_MESSAGE_ID = os.getenv(
+    "RULES_MESSAGE_ID",
+    "1529821999977857036",
+).strip()

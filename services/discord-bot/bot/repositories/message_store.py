@@ -2,6 +2,25 @@ from datetime import datetime, timezone
 
 
 class MessageStoreRepository:
+    """
+    Collection: ``message_store`` (database ``narutotcg``)
+
+    One document per published managed message. ``key`` is the template slug.
+
+    Document shape::
+
+        {
+            "_id": ObjectId,
+            "key": "rules",
+            "guild_id": "123456789012345678",
+            "channel_id": "123456789012345678",
+            "message_id": "1529821999977857036",
+            "created_at": ISODate("2026-07-23T12:06:27.513Z"),
+            "updated_at": ISODate("...")
+        }
+
+    Discord snowflakes are stored as strings. Lookups use ``key``.
+    """
 
     def __init__(self, mongo):
         self.collection = mongo.db.message_store

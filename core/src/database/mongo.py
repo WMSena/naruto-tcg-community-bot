@@ -16,6 +16,10 @@ class MongoDB:
         mongo.connect()
 
         mongo.db.message_store.find_one(...)
+
+    Database ``narutotcg`` collections used by the Discord bot:
+        - message_template  (unique index: slug)
+        - message_store     (unique index: key)
     """
 
     def __init__(self, uri: str, database: str):
