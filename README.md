@@ -21,8 +21,45 @@ Discord bot for the **Naruto TCG Community Indonesia**.
 ## Run with Docker
 
 MongoDB runs as container `kage` on the external Docker network `naruto-network`.
-Port `27017` is published only on `127.0.0.1` so Compass can use an SSH tunnel.
-Do not expose `27017` on the public VPS IP.
+Port `27017` is published on the VPS. Access is protected by the Mongo root
+password, not by binding to localhost.
+
+There are two env files. Do not commit either `.env`.
+
+| File | Used by | What to set |
+|---|---|---|
+| `core/mongo/.env` | `kage` | `MONGO_INITDB_ROOT_USERNAME` and `MONGO_INITDB_ROOT_PASSWORD` (first boot only) |
+| `services/discord-bot/.env` | the bot | `MONGO_URI` **with** the same user and password |
+
+Copy the examples if those files do not exist yet:
+
+```bash
+cp core/mongo/.env.example core/mongo/.env
+cp services/discord-bot/.env.example services/discord-bot/.env
+```
+
+Generate a password and put the **same** value in both files:
+
+```bash
+openssl rand -hex 24
+```
+
+`core/mongo/.env`:
+
+```
+MONGO_INITDB_ROOT_USERNAME=naruto
+MONGO_INITDB_ROOT_PASSWORD=YOUR_PASSWORD
+```
+
+`services/discord-bot/.env` (hostname `kage` only works inside Docker):
+
+```
+MONGO_URI=mongodb://naruto:YOUR_PASSWORD@kage:27017/narutotcg?authSource=admin
+```
+
+If `MONGO_URI` is set, the bot uses it as-is and ignores `MONGO_USERNAME` /
+`MONGO_PASSWORD`. A URI without a user (`mongodb://kage:27017`) will fail once
+Mongo requires a password.
 
 On the VPS, from the project root:
 
@@ -39,18 +76,6 @@ empty. `MONGO_INITDB_*` only applies to a **new empty volume**.
 ```bash
 docker stop kage
 docker rm kage
-```
-
-Copy `services/discord-bot/.env.example` to `services/discord-bot/.env` if needed,
-then set a password:
-
-```bash
-openssl rand -hex 24
-```
-
-Put that value in `MONGO_INITDB_ROOT_PASSWORD`. Username defaults to `naruto`.
-
-```bash
 docker compose up -d --build
 docker compose ps
 docker logs naruto-discord-bot --tail 50
@@ -58,14 +83,11 @@ docker logs naruto-discord-bot --tail 50
 
 ### Compass from your PC
 
-Do not connect to `mongodb://kage:27017` from your laptop. `kage` only exists
-inside Docker.
+`kage` is a Docker hostname. From your laptop use the VPS IP:
 
-1. SSH tunnel: `ssh -L 27017:127.0.0.1:27017 YOUR_USER@VPS_IP`
-2. Compass URI: `mongodb://naruto:YOUR_PASSWORD@127.0.0.1:27017/narutotcg?authSource=admin`
-
-Or in Compass use **Advanced → SSH / Tunnel** with MongoDB host `127.0.0.1`
-and your VPS SSH login.
+```
+mongodb://naruto:YOUR_PASSWORD@VPS_IP:27017/narutotcg?authSource=admin
+```
 
 ## Run Locally
 

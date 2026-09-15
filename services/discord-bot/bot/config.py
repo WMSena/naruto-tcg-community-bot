@@ -23,10 +23,14 @@ MONGO_PASSWORD = (
 
 def _mongo_uri() -> str:
     """
-    Prefer username/password so the bot can reach `kage` with auth.
+    Build the Mongo connection string.
 
-    `MONGO_URI=mongodb://kage:27017` (no user) is prioritized
-    even when password is set.
+    1. ``MONGO_URI`` if set. Used as-is, including a URI with no user.
+       After ``kage`` requires auth, this must include user, password, and
+       ``authSource=admin``, for example
+       ``mongodb://naruto:PASSWORD@kage:27017/narutotcg?authSource=admin``.
+    2. Else ``MONGO_USERNAME`` + ``MONGO_PASSWORD`` (host defaults to ``kage``).
+    3. Else ``mongodb://kage:27017/narutotcg`` with no auth.
     """
 
     explicit = os.getenv("MONGO_URI", "").strip()
