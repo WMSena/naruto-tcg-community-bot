@@ -1,8 +1,9 @@
-version: "3.9"
 services:
 
   kage:
-    image: mongo:7
+    # Pin 8.0 (LTS). mongo:latest is currently 8.3 and cannot start on
+    # data files created by mongo:7 (mongod exit 62 / UPGRADE PROBLEM).
+    image: mongo:8.0
     container_name: kage
     hostname: kage
     restart: unless-stopped
@@ -12,11 +13,15 @@ services:
       MONGO_INITDB_DATABASE: "narutotcg"
     volumes:
       - kage-data:/data/db
+    # Reachable on the VPS IP:27017 (Compass). Require a password in core/mongo/.env.
     ports:
       - "27017:27017"
     networks:
       - naruto-network
     healthcheck:
+      # Uses MONGO_INITDB_ROOT_* from core/mongo/.env. Those vars only
+      # create the user on a brand-new empty volume. If kage is Up but
+      # Unhealthy with UserNotFound, create the user (see README).
       test:
         [
           "CMD-SHELL",
@@ -25,7 +30,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 25s
+      start_period: 40s
 
   discord-bot:
     container_name: naruto-discord-bot
