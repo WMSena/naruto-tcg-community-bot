@@ -2,6 +2,34 @@ version: "3.9"
 
 services:
 
+  kage:
+    image: mongo:7
+    container_name: kage
+    hostname: kage
+    restart: unless-stopped
+    env_file:
+      - ./services/discord-bot/.env
+    environment:
+      MONGO_INITDB_DATABASE: narutotcg
+    volumes:
+      - kage-data:/data/db
+    # Localhost only. Reach this from your PC with Compass over SSH,
+    # not by opening 27017 on the public internet.
+    ports:
+      - "127.0.0.1:27017:27017"
+    networks:
+      - naruto-network
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mongosh -u \"$$MONGO_INITDB_ROOT_USERNAME\" -p \"$$MONGO_INITDB_ROOT_PASSWORD\" --authenticationDatabase admin --quiet --eval 'db.adminCommand({ ping: 1 })'"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 25s
+
   discord-bot:
     container_name: naruto-discord-bot
 
@@ -17,3 +45,17 @@ services:
     volumes:
       - ./services/discord-bot:/app/services/discord-bot
       - ./core:/app/core
+
+    depends_on:
+      kage:
+        condition: service_healthy
+
+    networks:
+      - naruto-network
+
+volumes:
+  kage-data:
+
+networks:
+  naruto-network:
+    external: true
