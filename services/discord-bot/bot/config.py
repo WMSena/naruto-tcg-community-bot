@@ -1,4 +1,6 @@
 import os
+from urllib.parse import quote_plus
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -6,15 +8,44 @@ load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 DISCORD_GUILD_ID = int(os.getenv("DISCORD_GUILD_ID"))
 
-MONGO_URI = os.getenv(
-    "MONGO_URI",
-    "mongodb://localhost:27017"
+MONGO_HOST = os.getenv("MONGO_HOST", "kage").strip() or "kage"
+MONGO_DATABASE = os.getenv("MONGO_DATABASE", "narutotcg").strip() or "narutotcg"
+MONGO_AUTH_SOURCE = os.getenv("MONGO_AUTH_SOURCE", "admin").strip() or "admin"
+MONGO_USERNAME = (
+    os.getenv("MONGO_USERNAME", "").strip()
+    or os.getenv("MONGO_INITDB_ROOT_USERNAME", "").strip()
+)
+MONGO_PASSWORD = (
+    os.getenv("MONGO_PASSWORD", "").strip()
+    or os.getenv("MONGO_INITDB_ROOT_PASSWORD", "").strip()
 )
 
-MONGO_DATABASE = os.getenv(
-    "MONGO_DATABASE",
-    "narutotcg"
-)
+
+def _mongo_uri() -> str:
+    """
+    Prefer username/password so the bot can reach `kage` with auth.
+
+    `MONGO_URI=mongodb://kage:27017` (no user) is ignored when a password
+    is set, because that old URI would fail after Mongo requires login.
+    """
+
+    if MONGO_USERNAME and MONGO_PASSWORD:
+        user = quote_plus(MONGO_USERNAME)
+        password = quote_plus(MONGO_PASSWORD)
+        auth_source = quote_plus(MONGO_AUTH_SOURCE)
+        return (
+            f"mongodb://{user}:{password}@{MONGO_HOST}:27017/"
+            f"{MONGO_DATABASE}?authSource={auth_source}"
+        )
+
+    explicit = os.getenv("MONGO_URI", "").strip()
+    if explicit:
+        return explicit
+
+    return f"mongodb://{MONGO_HOST}:27017/{MONGO_DATABASE}"
+
+
+MONGO_URI = _mongo_uri()
 MESSAGE_MANAGER_ROLE_IDS = [
     int(role.strip())
     for role in os.getenv(
