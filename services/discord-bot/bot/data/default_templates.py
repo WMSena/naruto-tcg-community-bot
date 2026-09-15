@@ -84,6 +84,7 @@ RULES_TEMPLATE = {
     ],
     "footer": {
         "text": "Aliansi Shinobi INAGAKURE • Terakhir Diperbarui",
+        "icon_url": "https://cmsapi-frontend.naruto-official.com/site/api/naruto/Image/get?path=/naruto/en/news/2026/06/18/J1bgbqcDwU7O6QdD/bkX6MlvKX4LLmZAUKYG8GGK8n9lE6cPD.jpeg"
     },
 }
 
