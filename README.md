@@ -20,7 +20,10 @@ Discord bot for the **Naruto TCG Community Indonesia**.
 
 ## Run with Docker
 
-MongoDB runs as container `kage` on the external Docker network `naruto-network`.
+MongoDB runs as container `kage` (`mongo:8.0`) on the external Docker
+network `naruto-network`. Do not use `mongo:latest`: that tag is currently
+MongoDB 8.3, which cannot open data files created by `mongo:7` (container
+exit code 62). Upgrade path is 7.0 → 8.0, not 7.0 → 8.3.
 Port `27017` is published on the VPS. Access is protected by the Mongo root
 password, not by binding to localhost.
 

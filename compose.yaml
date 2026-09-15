@@ -1,8 +1,9 @@
-version: "3.9"
 services:
 
   kage:
-    image: mongo:7
+    # Pin 8.0 (LTS). mongo:latest is currently 8.3 and cannot start on
+    # data files created by mongo:7 (mongod exit 62 / UPGRADE PROBLEM).
+    image: mongo:8.0
     container_name: kage
     hostname: kage
     restart: unless-stopped
@@ -29,7 +30,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 25s
+      start_period: 40s
 
   discord-bot:
     container_name: naruto-discord-bot
