@@ -69,15 +69,34 @@ docker network create naruto-network
 
 If that says the network already exists, continue.
 
+`MONGO_INITDB_*` only creates the root user on a **new empty volume**. If
+`kage` is **Up** but **unhealthy** and logs say `UserNotFound`, Mongo is
+running and the user was never created. Create it from inside the
+container (same username and password as `core/mongo/.env` / `MONGO_URI`):
+
+```bash
+docker exec -it kage mongosh admin --eval 'db.createUser({user: "YOUR_USERNAME", pwd: "YOUR_PASSWORD", roles: [{role: "root", db: "admin"}]})'
+docker compose up -d
+```
+
+If the database is still empty and you would rather start over:
+
+```bash
+docker compose down
+docker volume ls | grep kage
+docker volume rm VOLUME_NAME
+docker compose up -d
+```
+
 If an old `kage` container is already running **without** a password, remove it
-so Compose can recreate it with auth. This is safe when the database is already
-empty. `MONGO_INITDB_*` only applies to a **new empty volume**.
+so Compose can recreate it with auth:
 
 ```bash
 docker stop kage
 docker rm kage
 docker compose up -d --build
 docker compose ps
+docker logs kage --tail 80
 docker logs naruto-discord-bot --tail 50
 ```
 
