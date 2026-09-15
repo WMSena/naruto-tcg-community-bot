@@ -12,6 +12,7 @@ services:
       MONGO_INITDB_DATABASE: "narutotcg"
     volumes:
       - kage-data:/data/db
+    # Reachable on the VPS IP:27017 (Compass). Require a password in core/mongo/.env.
     ports:
       - "27017:27017"
     networks:
