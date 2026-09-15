@@ -20,7 +20,10 @@ Discord bot for the **Naruto TCG Community Indonesia**.
 
 ## Run with Docker
 
-MongoDB runs as container `kage` on the external Docker network `naruto-network`.
+MongoDB runs as container `kage` (`mongo:8.0`) on the external Docker
+network `naruto-network`. Do not use `mongo:latest`: that tag is currently
+MongoDB 8.3, which cannot open data files created by `mongo:7` (container
+exit code 62). Upgrade path is 7.0 → 8.0, not 7.0 → 8.3.
 Port `27017` is published on the VPS. Access is protected by the Mongo root
 password, not by binding to localhost.
 
@@ -69,15 +72,17 @@ docker network create naruto-network
 
 If that says the network already exists, continue.
 
-If an old `kage` container is already running **without** a password, remove it
-so Compose can recreate it with auth. This is safe when the database is already
-empty. `MONGO_INITDB_*` only applies to a **new empty volume**.
+If an old `kage` container is crash-looping after an image change, stop it
+and start again on `mongo:8.0` so it can read the existing `kage-data`
+volume. Only delete the volume if the database is empty and you want a
+fresh 8.0 data directory.
 
 ```bash
 docker stop kage
 docker rm kage
 docker compose up -d --build
 docker compose ps
+docker logs kage --tail 80
 docker logs naruto-discord-bot --tail 50
 ```
 
