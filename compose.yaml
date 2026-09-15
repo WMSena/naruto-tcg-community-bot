@@ -19,6 +19,9 @@ services:
     networks:
       - naruto-network
     healthcheck:
+      # Uses MONGO_INITDB_ROOT_* from core/mongo/.env. Those vars only
+      # create the user on a brand-new empty volume. If kage is Up but
+      # Unhealthy with UserNotFound, create the user (see README).
       test:
         [
           "CMD-SHELL",

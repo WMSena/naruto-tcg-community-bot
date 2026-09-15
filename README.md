@@ -72,10 +72,44 @@ docker network create naruto-network
 
 If that says the network already exists, continue.
 
-If an old `kage` container is crash-looping after an image change, stop it
-and start again on `mongo:8.0` so it can read the existing `kage-data`
-volume. Only delete the volume if the database is empty and you want a
-fresh 8.0 data directory.
+`MONGO_INITDB_*` only creates the root user on a **new empty volume**. If
+`kage` is **Up** but **unhealthy** and logs say `UserNotFound`, Mongo is
+running and the user was never created. Create it from inside the
+container (same username and password as `core/mongo/.env` / `MONGO_URI`):
+
+```bash
+docker exec -it kage mongosh admin --eval 'db.createUser({user: "YOUR_USERNAME", pwd: "YOUR_PASSWORD", roles: [{role: "root", db: "admin"}]})'
+docker compose up -d
+```
+
+If `createUser` returns **Command createUser requires authentication**, a user
+already exists and the localhost exception is off. Start Mongo once **without**
+auth on the same volume, create `hashirama` (or use the existing username in
+`MONGO_URI`), then start `kage` again:
+
+```bash
+VOLUME=$(docker inspect kage --format '{{range .Mounts}}{{if eq .Destination "/data/db"}}{{.Name}}{{end}}{{end}}')
+docker stop kage
+docker run --rm -d --name kage-repair -v "${VOLUME}:/data/db" mongo:8.0 --bind_ip_all
+sleep 5
+docker exec kage-repair mongosh admin --eval 'db.getUsers()'
+docker exec -it kage-repair mongosh admin --eval 'db.createUser({user: "YOUR_USERNAME", pwd: "YOUR_PASSWORD", roles: [{role: "root", db: "admin"}]})'
+docker stop kage-repair
+docker start kage
+docker compose up -d
+```
+
+If the database is still empty and you would rather start over:
+
+```bash
+docker compose down
+docker volume ls | grep kage
+docker volume rm VOLUME_NAME
+docker compose up -d
+```
+
+If an old `kage` container is already running **without** a password, remove it
+so Compose can recreate it with auth:
 
 ```bash
 docker stop kage
