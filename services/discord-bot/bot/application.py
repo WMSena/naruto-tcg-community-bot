@@ -9,6 +9,7 @@ from bot.config import (
 )
 
 from database import MongoDB
+from bot.database_bootstrap import bootstrap_database
 
 class NarutoBot(commands.Bot):
 
@@ -32,8 +33,9 @@ class NarutoBot(commands.Bot):
         )
 
     async def setup_hook(self):
-        # Connect Mongo only once
+        # Connect Mongo only once, then recreate indexes + seed missing templates
         self.mongo.connect()
+        bootstrap_database(self.mongo)
 
         # Load all cogs
         await self.load_cogs()
