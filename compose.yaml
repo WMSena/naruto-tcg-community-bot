@@ -1,5 +1,4 @@
 version: "3.9"
-
 services:
 
   kage:
@@ -8,15 +7,13 @@ services:
     hostname: kage
     restart: unless-stopped
     env_file:
-      - ./services/discord-bot/.env
+      - ./core/mongo/.env
     environment:
-      MONGO_INITDB_DATABASE: narutotcg
+      MONGO_INITDB_DATABASE: "narutotcg"
     volumes:
       - kage-data:/data/db
-    # Localhost only. Reach this from your PC with Compass over SSH,
-    # not by opening 27017 on the public internet.
     ports:
-      - "127.0.0.1:27017:27017"
+      - "27017:27017"
     networks:
       - naruto-network
     healthcheck:
@@ -32,30 +29,22 @@ services:
 
   discord-bot:
     container_name: naruto-discord-bot
-
     build:
       context: .
       dockerfile: services/discord-bot/Dockerfile
-
     restart: unless-stopped
-
     env_file:
       - ./services/discord-bot/.env
-
     volumes:
       - ./services/discord-bot:/app/services/discord-bot
       - ./core:/app/core
-
     depends_on:
       kage:
         condition: service_healthy
-
     networks:
       - naruto-network
-
 volumes:
   kage-data:
-
 networks:
   naruto-network:
     external: true

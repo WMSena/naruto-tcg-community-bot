@@ -25,9 +25,13 @@ def _mongo_uri() -> str:
     """
     Prefer username/password so the bot can reach `kage` with auth.
 
-    `MONGO_URI=mongodb://kage:27017` (no user) is ignored when a password
-    is set, because that old URI would fail after Mongo requires login.
+    `MONGO_URI=mongodb://kage:27017` (no user) is prioritized
+    even when password is set.
     """
+
+    explicit = os.getenv("MONGO_URI", "").strip()
+    if explicit:
+        return explicit
 
     if MONGO_USERNAME and MONGO_PASSWORD:
         user = quote_plus(MONGO_USERNAME)
@@ -37,10 +41,6 @@ def _mongo_uri() -> str:
             f"mongodb://{user}:{password}@{MONGO_HOST}:27017/"
             f"{MONGO_DATABASE}?authSource={auth_source}"
         )
-
-    explicit = os.getenv("MONGO_URI", "").strip()
-    if explicit:
-        return explicit
 
     return f"mongodb://{MONGO_HOST}:27017/{MONGO_DATABASE}"
 
