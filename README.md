@@ -79,6 +79,23 @@ docker exec -it kage mongosh admin --eval 'db.createUser({user: "YOUR_USERNAME",
 docker compose up -d
 ```
 
+If `createUser` returns **Command createUser requires authentication**, a user
+already exists and the localhost exception is off. Start Mongo once **without**
+auth on the same volume, create `hashirama` (or use the existing username in
+`MONGO_URI`), then start `kage` again:
+
+```bash
+VOLUME=$(docker inspect kage --format '{{range .Mounts}}{{if eq .Destination "/data/db"}}{{.Name}}{{end}}{{end}}')
+docker stop kage
+docker run --rm -d --name kage-repair -v "${VOLUME}:/data/db" mongo:8.0 --bind_ip_all
+sleep 5
+docker exec kage-repair mongosh admin --eval 'db.getUsers()'
+docker exec -it kage-repair mongosh admin --eval 'db.createUser({user: "YOUR_USERNAME", pwd: "YOUR_PASSWORD", roles: [{role: "root", db: "admin"}]})'
+docker stop kage-repair
+docker start kage
+docker compose up -d
+```
+
 If the database is still empty and you would rather start over:
 
 ```bash
